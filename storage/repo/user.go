@@ -1,5 +1,7 @@
 package repo
 
+import "time"
+
 type User struct {
 	ID          int64
 	FirstName   string
@@ -7,15 +9,15 @@ type User struct {
 	PhoneNumber string
 	Email       string
 	ImageURL    string
-	CreatedAt   string
-	UpdatedAt   string
-	DeletedAt   string
+	CreatedAt   time.Time
+	UpdatedAt   *time.Time
+	DeletedAt   *time.Time
 }
 
 type GetAllUsersParams struct {
-	Limit      int32
-	Page       int32
-	Search     string
+	Limit  int32
+	Page   int32
+	Search string
 }
 
 type GetAllUsersResult struct {

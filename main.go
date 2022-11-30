@@ -24,26 +24,22 @@ func main() {
 
 	psqlConn, err := sqlx.Connect("postgres", psqlUrl)
 	if err != nil {
-		log.Fatalf("failed to connect database; %v", err)
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
 	storage := storage.NewStoragePg(psqlConn)
 
-	note, err := storage.Note().Create(&repo.Note{
-		UserID:      1,
-		Title:       "hello",
-		Description: "how are you",
+	// Botta faqat 'Note' ni 'Update'i qilingan, lekin hammasi ishlavotti
+
+	note, err := storage.Note().Update(&repo.Note{
+		UserID: 3,
+		Title: "I'm singer",
+		Description: "My first song is \"Fetish\"",
+		ID: 3,
 	})
-	if err != nil {
-		log.Fatalf("failed to create note: %v", err)
+	if err!= nil {
+		log.Fatalf("failed to update note: %v", err)
 	}
-
-	user, err := storage.User().Create(&repo.User{
-		FirstName: "tobias",
-		LastName:  "amigo",
-		Email:     "amigoguys@gmail.com",
-	})
-
-	fmt.Println(user)
 	fmt.Println(note)
+
 }

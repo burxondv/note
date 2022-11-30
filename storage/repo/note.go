@@ -9,14 +9,14 @@ type Note struct {
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   *time.Time
-	DeletedAt   time.Time
+	DeletedAt   *time.Time
 }
 
 type GetAllNotesParams struct {
 	Limit      int32
 	Page       int32
 	Search     string
-	UserID     string
+	UserID     int64
 	SortByData string
 }
 

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/burxondv/note/api"
 	"github.com/burxondv/note/config"
 	"github.com/burxondv/note/storage"
-	"github.com/burxondv/note/storage/repo"
+	"github.com/go-redis/redis/v9"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -27,19 +29,23 @@ func main() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	storage := storage.NewStoragePg(psqlConn)
-
-	// Botta faqat 'Note' ni 'Update'i qilingan, lekin hammasi ishlavotti
-
-	note, err := storage.Note().Update(&repo.Note{
-		UserID: 3,
-		Title: "I'm singer",
-		Description: "My first song is \"Fetish\"",
-		ID: 3,
+	rdb := redis.NewClient(&redis.Options{
+		Addr: cfg.Redis.Addr,
 	})
-	if err!= nil {
-		log.Fatalf("failed to update note: %v", err)
-	}
-	fmt.Println(note)
 
+	strg := storage.NewStoragePg(psqlConn)
+	inMemory := storage.NewInMemoryStorage(rdb)
+
+	apiServer := api.New(&api.RouterOptions{
+		Cfg:      &cfg,
+		Storage:  strg,
+		InMemory: inMemory,
+	})
+
+	err = apiServer.Run(cfg.HttpPort)
+	if err != nil {
+		log.Fatalf("failed to run server: %v", err)
+	}
+
+	log.Print("server stopped")
 }

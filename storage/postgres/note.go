@@ -152,16 +152,14 @@ func (ur *noteRepo) GetAll(params *repo.GetAllNotesParams) (*repo.GetAllNotesRes
 func (ur *noteRepo) Update(note *repo.Note) (*repo.Note, error) {
 	query := `
 		UPDATE notes SET
-			user_id=$1,
-			title=$2,
-            description=$3
-		WHERE id=$4
+			title=$1,
+            description=$2
+		WHERE id=$3
 		RETURNING id, user_id, title, description, created_at, updated_at, deleted_at
 	`
 
 	row := ur.db.QueryRow(
 		query,
-		note.UserID,
 		note.Title,
 		note.Description,
 		note.ID,

@@ -44,11 +44,13 @@ func New(opt *RouterOptions) *gin.Engine {
 	apiV1.GET("/users/:id", handlerV1.GetUser)
 	apiV1.GET("/users", handlerV1.GetAllUsers)
 	apiV1.PUT("/users/:id", handlerV1.UpdateUser)
+	apiV1.DELETE("/users/:id", handlerV1.DeleteUser)
 
 	apiV1.POST("/notes", handlerV1.CreateNote)
 	apiV1.GET("/notes/:id", handlerV1.GetNote)
 	apiV1.GET("/notes", handlerV1.GetAllNotes)
 	apiV1.PUT("/notes/:id", handlerV1.UpdateNote)
+	apiV1.DELETE("/notes/:id", handlerV1.DeleteNote)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

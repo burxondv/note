@@ -105,7 +105,7 @@ func (h *handlerV1) GetAllNotes(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID"
-// @Param note body models.CreateNoteRequest true "Note"
+// @Param note body models.UpdateNote true "Note"
 // @Success 200 {object} models.Note
 // @Failure 500 {object} models.ErrorResponse
 func (h *handlerV1) UpdateNote(c *gin.Context) {
@@ -122,16 +122,54 @@ func (h *handlerV1) UpdateNote(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
 	req.ID = int64(id)
 
-	updated, err := h.storage.Note().Update(&req)
+	noteData, err := h.storage.Note().Get(req.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	updated, err := h.storage.Note().Update(&repo.Note{
+		ID:          noteData.ID,
+		UserID:      noteData.UserID,
+		Title:       req.Title,
+		Description: req.Description,
+		CreatedAt:   noteData.CreatedAt,
+		UpdatedAt:   noteData.UpdatedAt,
+		DeletedAt:   noteData.DeletedAt,
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
 	c.JSON(http.StatusCreated, parseNoteModel(updated))
+}
+
+// @Router /notes/{id} [delete]
+// @Summary Delete a note
+// @Description Delete a note
+// @Tags note
+// @Accept json
+// @Produce json
+// @Param id path int true "ID"
+// @Success 200 {object} models.ResponseOK
+// @Failure 500 {object} models.ErrorResponse
+func (h *handlerV1) DeleteNote(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	err = h.storage.Note().Delete(int64(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully deleted",
+	})
 }
 
 func getNoteResponse(data *repo.GetAllNotesResult) *models.GetAllNotesResponse {

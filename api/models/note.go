@@ -18,6 +18,11 @@ type CreateNoteRequest struct {
 	Description string `json:"description"`
 }
 
+type UpdateNote struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
 type GetAllNotesParams struct {
 	Limit      int32  `json:"limit" binding:"required" default:"10"`
 	Page       int32  `json:"page" binding:"required" default:"1"`

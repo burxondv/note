@@ -62,6 +62,18 @@ definitions:
       user_id:
         type: integer
     type: object
+  models.ResponseOK:
+    properties:
+      message:
+        type: string
+    type: object
+  models.UpdateNote:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
   models.User:
     properties:
       created_at:
@@ -159,6 +171,30 @@ paths:
       tags:
       - note
   /notes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a note
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a note
+      tags:
+      - note
     get:
       consumes:
       - application/json
@@ -198,7 +234,7 @@ paths:
         name: note
         required: true
         schema:
-          $ref: '#/definitions/models.CreateNoteRequest'
+          $ref: '#/definitions/models.UpdateNote'
       produces:
       - application/json
       responses:
@@ -272,6 +308,30 @@ paths:
       tags:
       - user
   /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a user
+      tags:
+      - user
     get:
       consumes:
       - application/json

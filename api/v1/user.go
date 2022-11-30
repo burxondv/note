@@ -134,6 +134,32 @@ func (h *handlerV1) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, parseUserModel(updated))
 }
 
+// @Router /users/{id} [delete]
+// @Summary Delete a user
+// @Description Delete a user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path int true "ID"
+// @Success 200 {object} models.ResponseOK
+// @Failure 500 {object} models.ErrorResponse
+func (h *handlerV1) DeleteUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	err = h.storage.User().Delete(int64(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully deleted",
+	})
+}
+
 func getUsersResponse(data *repo.GetAllUsersResult) *models.GetAllUsersResponse {
 	response := models.GetAllUsersResponse{
 		Users: make([]*models.User, 0),
@@ -175,7 +201,6 @@ func validateGetAllUserParams(c *gin.Context) (*models.GetAllUserParams, error) 
 		Search: c.Query("search"),
 	}, nil
 }
-
 
 func parseUserModel(user *repo.User) models.User {
 	return models.User{
